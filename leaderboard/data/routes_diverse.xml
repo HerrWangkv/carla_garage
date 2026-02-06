@@ -1,0 +1,120 @@
+<routes>
+    <!-- Town13 Routes -->
+    <route id="0" town="Town13">
+        <!-- Short Segment 1: clear sunny (shadows enabled) -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="0.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="45.0" sun_altitude_angle="60.0" fog_density="0.0"/>
+            <weather route_percentage="100" cloudiness="0.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="45.0" sun_altitude_angle="60.0" fog_density="0.0"/>
+        </weathers>
+        <waypoints>
+            <position x="6090.4" y="4311.7" z="164.9"/>
+            <position x="6092.0" y="4161.8" z="163.5"/>
+            <position x="6509.8" y="4257.1" z="171.4"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+    
+    <route id="1" town="Town13">
+        <!-- Short Segment 2: heavy rain -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="80.0" precipitation="80.0" precipitation_deposits="50.0" wetness="100.0" wind_intensity="50.0" sun_azimuth_angle="0.0" sun_altitude_angle="30.0" fog_density="10.0"/>
+            <weather route_percentage="100" cloudiness="80.0" precipitation="80.0" precipitation_deposits="50.0" wetness="100.0" wind_intensity="50.0" sun_azimuth_angle="0.0" sun_altitude_angle="30.0" fog_density="10.0"/>
+        </weathers>
+        <waypoints>
+            <position x="6622.8" y="4057.9" z="171.3"/>
+            <position x="6850.0" y="3976.4" z="174.2"/>
+            <position x="6906.5" y="3651.1" z="172.1"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <route id="2" town="Town13">
+        <!-- Short Segment 3: foggy night -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="50.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="0.0" sun_altitude_angle="-20.0" fog_density="60.0"/>
+            <weather route_percentage="100" cloudiness="50.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="0.0" sun_altitude_angle="-20.0" fog_density="60.0"/>
+        </weathers>
+        <waypoints>
+            <position x="3827.6" y="1022.8" z="180.4"/>
+            <position x="3616.3" y="995.3" z="178.3"/>
+            <position x="3360.5" y="879.6" z="174.5"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <route id="3" town="Town13">
+        <!-- Short Segment 4: cloudy rainy noon -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="60.0" precipitation="40.0" precipitation_deposits="40.0" wetness="60.0" wind_intensity="20.0" sun_azimuth_angle="0.0" sun_altitude_angle="45.0" fog_density="5.0"/>
+            <weather route_percentage="100" cloudiness="60.0" precipitation="40.0" precipitation_deposits="40.0" wetness="60.0" wind_intensity="20.0" sun_azimuth_angle="0.0" sun_altitude_angle="45.0" fog_density="5.0"/>
+        </weathers>
+        <waypoints>
+            <position x="6958.8" y="2602.0" z="167.1"/>
+            <position x="6819.8" y="2560.7" z="166.1"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <!-- Town12 Routes -->
+    <route id="4" town="Town12">
+        <!-- Short Segment 5: wet cloudy sunset -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="70.0" precipitation="0.0" precipitation_deposits="0.0" wetness="100.0" wind_intensity="10.0" sun_azimuth_angle="180.0" sun_altitude_angle="5.0" fog_density="2.0"/>
+            <weather route_percentage="100" cloudiness="70.0" precipitation="0.0" precipitation_deposits="0.0" wetness="100.0" wind_intensity="10.0" sun_azimuth_angle="180.0" sun_altitude_angle="5.0" fog_density="2.0"/>
+        </weathers>
+        <waypoints>
+             <position x="983.5" y="5382.2" z="371"/>
+             <position x="824.2" y="5575.3" z="371"/>
+             <position x="605.5" y="5575.5" z="370"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <route id="5" town="Town12">
+        <!-- Short Segment 6: soft rain noon -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="50.0" precipitation="20.0" precipitation_deposits="20.0" wetness="30.0" wind_intensity="5.0" sun_azimuth_angle="0.0" sun_altitude_angle="80.0" fog_density="0.0"/>
+            <weather route_percentage="100" cloudiness="50.0" precipitation="20.0" precipitation_deposits="20.0" wetness="30.0" wind_intensity="5.0" sun_azimuth_angle="0.0" sun_altitude_angle="80.0" fog_density="0.0"/>
+        </weathers>
+        <waypoints>
+             <position x="497.5" y="5718.3" z="368"/>
+             <position x="516.3" y="5897.4" z="364"/>
+             <position x="355.1" y="6138.1" z="358"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <route id="6" town="Town12">
+        <!-- Short Segment 7: clear sunrise -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="10.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="90.0" sun_altitude_angle="15.0" fog_density="0.0"/>
+            <weather route_percentage="100" cloudiness="10.0" precipitation="0.0" precipitation_deposits="0.0" wetness="0.0" wind_intensity="0.0" sun_azimuth_angle="90.0" sun_altitude_angle="15.0" fog_density="0.0"/>
+        </weathers>
+        <waypoints>
+             <position x="-264.6" y="6019.4" z="360"/>
+             <position x="-297.9" y="5816.4" z="366"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+
+    <route id="7" town="Town12">
+        <!-- Short Segment 8: storm night -->
+        <weathers>
+            <weather route_percentage="0" cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0" wind_intensity="80.0" sun_azimuth_angle="0.0" sun_altitude_angle="-30.0" fog_density="10.0"/>
+            <weather route_percentage="100" cloudiness="100.0" precipitation="100.0" precipitation_deposits="90.0" wetness="100.0" wind_intensity="80.0" sun_azimuth_angle="0.0" sun_altitude_angle="-30.0" fog_density="10.0"/>
+        </weathers>
+        <waypoints>
+             <position x="-817.8" y="5685.4" z="375"/>
+             <position x="-819.3" y="4835.2" z="372"/>
+        </waypoints>
+        <scenarios>
+        </scenarios>
+    </route>
+</routes>

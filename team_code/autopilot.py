@@ -128,7 +128,11 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
 
     # Set up the save path if specified
     if os.environ.get("SAVE_PATH", None) is not None:
-      string = os.environ["TOWN"]
+      # string = os.environ["TOWN"]
+      # Use the actual map name from the simulation instead of environment variable
+      # to support multi-town routes in a single run.
+      string = self.world_map.name.split('/')[-1]
+
       string += "_Rep" + os.environ["REPETITION"]
       string += f"_{self.route_index}"
 

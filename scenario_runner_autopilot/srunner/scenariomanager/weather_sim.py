@@ -203,7 +203,7 @@ class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
 
         self._wsize = 3
 
-        self._current_index = 0
+        self._current_index = -1
         self._route_length = len(self._route)
         self._route_transforms, _ = zip(*self._route)
         self._route_perc = self._get_route_percentages()
@@ -299,9 +299,9 @@ class RouteWeatherBehavior(py_trees.behaviour.Behaviour):
 
         
         # Do not change the weather during datagen
-        if int(os.environ.get('DATAGEN', 0)) == 0:
-            if new_index > self._current_index:
-                self._world.set_weather(self._route_weathers[new_index])
+        # if int(os.environ.get('DATAGEN', 0)) == 0:
+        if new_index > self._current_index:
+            self._world.set_weather(self._route_weathers[new_index])
         self._current_index = new_index
 
         return new_status
