@@ -195,7 +195,7 @@ class BackgroundBehavior(AtomicBehavior):
 
         self._spawn_vertical_shift = 0.2
         self._reuse_dist = 10  # When spawning actors, might reuse actors closer to this distance
-        self._spawn_free_radius = 20  # Sources closer to the ego will not spawn actors
+        self._spawn_free_radius = 100  # Sources closer to the ego will not spawn actors
         self._fake_junction_ids = []
         self._fake_lane_pair_keys = []
 
@@ -234,7 +234,7 @@ class BackgroundBehavior(AtomicBehavior):
         self._active_junctions = []  # List of all the active junctions
 
         self._junction_sources_dist = 40  # Distance from the entry sources to the junction [m]
-        self._junction_sources_max_actors = 6  # Maximum vehicles alive at the same time per source
+        self._junction_sources_max_actors = 20  # Maximum vehicles alive at the same time per source
         self._junction_spawn_dist = 15  # Distance between spawned vehicles [m]
         self._junction_minimum_source_dist = 15  # Minimum distance between sources and their junction
 
@@ -1100,7 +1100,7 @@ class BackgroundBehavior(AtomicBehavior):
 
             # Spawn a new actor if the last one is far enough
             if distance > self._road_spawn_dist:
-                actor = self._spawn_source_actor(source, self._road_spawn_dist)
+                actor = self._spawn_source_actor(source, self._spawn_free_radius)
                 if actor is None:
                     continue
 
@@ -1328,7 +1328,7 @@ class BackgroundBehavior(AtomicBehavior):
 
                 # Spawn a new actor if the last one is far enough
                 if distance > self._junction_spawn_dist:
-                    actor = self._spawn_source_actor(source, self._junction_spawn_dist)
+                    actor = self._spawn_source_actor(source, self._spawn_free_radius)
                     if not actor:
                         continue
                     if junction.stop_non_route_entries and get_lane_key(source.entry_lane_wp) not in junction.route_entry_keys:
@@ -1598,7 +1598,7 @@ class BackgroundBehavior(AtomicBehavior):
 
             # Spawn a new actor if the last one is far enough
             if distance > self._opposite_spawn_dist:
-                actor = self._spawn_source_actor(source)
+                actor = self._spawn_source_actor(source, self._spawn_free_radius)
                 if actor is None:
                     continue
                 self._tm.ignore_lights_percentage(actor, 100)

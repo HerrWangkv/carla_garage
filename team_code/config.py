@@ -352,8 +352,8 @@ class GlobalConfig:
     # Number of points the LiDAR generates per second.
     # Change in proportion to the rotation frequency.
     self.lidar_points_per_second = 600000
-    self.camera_pos = [1.6701001, 0.02587495, 1.5226235]  # x, y, z mounting position of the camera
-    self.camera_rot_0 = [0.5020342780640095, 1.4495749038600472, -0.16468328168696952]  # Roll Pitch Yaw of camera 0 in degree
+    self.camera_pos = [0.2522726, 0.0258750, 1.8726235]  # x, y, z mounting position of the camera
+    self.camera_rot_0 = [0.5020343, 1.4495749, -0.1646833]  # Roll Pitch Yaw of camera 0 in degree
 
     # Therefore their size is smaller
     self.camera_width = 1920  # Camera width in pixel during data collection and eval (affects sensor agent)

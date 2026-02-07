@@ -21,6 +21,7 @@ import os
 import sys
 import signal
 import socket
+import pathlib
 
 from srunner.scenariomanager.carla_data_provider import *
 from srunner.scenariomanager.timer import GameTime
@@ -301,8 +302,26 @@ class LeaderboardEvaluator(object):
         try:
             now = datetime.now()
             # route_string = pathlib.Path(os.environ.get('ROUTES', '')).stem + '_'
-            route_string = pathlib.Path(args.routes).stem + '_'
-            route_string += f'route{config.index}'
+            
+            # Add XML filename stem to ensure uniqueness when running multiple split files with same route index
+            route_string = ""
+            if args.routes:
+                route_string += pathlib.Path(args.routes).stem + '_'
+            
+            if hasattr(config, 'scenario_configs') and len(config.scenario_configs) > 0:
+                route_string += f'{config.scenario_configs[0].type}_'
+            else:
+                route_string += 'noScenarios_'
+            
+            # Use the actual Route ID from the XML (stored in config.name which is RouteScenario_{ID})
+            # instead of config.index (which is reset to 0 for each file run)
+            try:
+                # config.name is like "RouteScenario_10"
+                route_id_from_xml = config.name.split('_')[-1]
+                route_string += f'route{route_id_from_xml}'
+            except:
+                route_string += f'route{config.index}'
+
             route_date_string = route_string + '_' + '_'.join(
                 map(lambda x: '%02d' % x, (now.month, now.day, now.hour, now.minute, now.second))
             )
@@ -320,7 +339,16 @@ class LeaderboardEvaluator(object):
 
             # self.agent_instance = agent_class_obj(args.host, args.port, args.debug)
             if int(os.environ.get('DATAGEN', 0))==1:
-                self.agent_instance = agent_class_obj(args.agent_config, config.index)
+                # Construct a meaningful route index for DATAGEN mode
+                scenario_name = ""
+                if hasattr(config, 'scenario_configs') and len(config.scenario_configs) > 0:
+                    scenario_name = f"{config.scenario_configs[0].type}_"
+                else:
+                    scenario_name = "noScenarios_"
+                
+                # Combine scenario type and route index
+                datagen_route_index = f"{scenario_name}{config.index}"
+                self.agent_instance = agent_class_obj(args.agent_config, datagen_route_index)
             else:
                 self.agent_instance = agent_class_obj(args.agent_config, route_date_string)
 

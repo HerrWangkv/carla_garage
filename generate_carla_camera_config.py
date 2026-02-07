@@ -141,9 +141,28 @@ def process_calibration(data, camera_channel='CAM_F0'):
     # --- 3. Convert to CARLA Config Space ---
     
     # A. Position Conversion
-    # NuScenes: X-Fwd, Y-Left, Z-Up
-    # CARLA:    X-Fwd, Y-Right, Z-Up
+    # NuScenes/NavSim Standard: Ego Origin is at the midpoint of the rear axle. (See https://github.com/autonomousvision/navsim/issues/16)
+    # CARLA Standard: Ego Origin is at the ground projected from the center of the vehicle (or rear axle depending on vehicle, but Z=0 is ground).
+    #
+    # PROOF: 
+    # 1. The .pkl data has `lidar2ego = [0,0,0]`, implying Lidar Frame == Ego Frame (or data is pre-transformed).
+    # 2. However, `cams['CAM_F0']` Z is 1.52m. If Ego was Ground, this is 1.52m high (dashboard level).
+    # 3. If Ego is Axle (Standard NuScenes), then Ground is Z = -AxleHeight.
+    # 4. Standard Axle Height (Wheel Radius) for autonomous test vehicles (e.g., Renault Zoe/Pacifica) is ~0.30m - 0.35m.
+    # 5. Therefore, New Z (Height from Ground) = Old Z (Height from Axle) + AxleHeight.
+    
+    # Furthermore, we must adjust for the longitudinal origin difference.
+    # NuScenes/NavSim Origin: Rear Axle
+    # CARLA Origin: Vehicle Center
+    # We must shift the camera position backwards by the distance between the center and the rear axle.
+    # From team_code/config.py: self.rear_wheel_base = 1.4178275
+    
+    REAR_WHEEL_BASE_OFFSET = 1.4178275
+    AXLE_HEIGHT_OFFSET = 0.35 
+    
     pos_carla = nusc_to_carla_vec(pos_nusc)
+    pos_carla[0] -= REAR_WHEEL_BASE_OFFSET
+    pos_carla[2] += AXLE_HEIGHT_OFFSET
 
     # B. Rotation Conversion
     # We need to find the rotation R_carlacam_to_carlaego such that:

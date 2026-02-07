@@ -5,15 +5,19 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-SOURCE_DIR = 'my_10hz_dataset_seq61'
+# SOURCE_DIR = 'my_10hz_dataset_town10'
+# Use the directory where your new data is located
+SOURCE_DIR = 'my_10hz_dataset_town10'
 VIDEO_ROOT = 'my_10hz_dataset_videos'
 RGB_OUT_DIR = os.path.join(VIDEO_ROOT, 'rgb')
 DISP_OUT_DIR = os.path.join(VIDEO_ROOT, 'disparity')
 
 FRAMERATE = 10
+# Adjust resolution if needed, typical CARLA is 1280x720 or 2560x1440
+# If your images are different, the script resizes them.
 TARGET_WIDTH = 1280
 TARGET_HEIGHT = 704
-MAX_FRAMES = 49
+# MAX_FRAMES = 49
 
 def ensure_dir(path):
     if not os.path.exists(path):
@@ -66,14 +70,10 @@ def create_video_from_frames(frames, output_path, is_disparity=False):
                 if depth is None: continue
                 
                 # Inverse depth for disparity visualization
+                # add epsilon to avoid div by zero
                 inv_depth = 1.0 / (depth + 0.1) 
                 
-                # Normalize. 
-                # Since frames can vary, using min/max per frame gives best contrast but flickers.
-                # However, for pure inspection, flicker is acceptable to see features.
-                # To be stable, we'd need fixed range. 
-                # Let's use min/max per frame for maximum visibility.
-                
+                # Normalize for visualization
                 mn, mx = inv_depth.min(), inv_depth.max()
                 if mx - mn > 0:
                     disp_norm = (inv_depth - mn) / (mx - mn) * 255.0
@@ -81,8 +81,6 @@ def create_video_from_frames(frames, output_path, is_disparity=False):
                     disp_norm = np.zeros_like(inv_depth)
 
                 disp_img = disp_norm.astype(np.uint8)
-                
-                # Convert to BGR so it's a valid input for bgr24 pipe, but visually grayscale
                 img_resized = cv2.cvtColor(disp_img, cv2.COLOR_GRAY2BGR)
                 
             else:
@@ -90,7 +88,7 @@ def create_video_from_frames(frames, output_path, is_disparity=False):
                 if img is None: continue
                 img_resized = img
 
-            # Resize
+            # Resize if necessary
             if img_resized.shape[:2] != (TARGET_HEIGHT, TARGET_WIDTH):
                 img_resized = cv2.resize(img_resized, (TARGET_WIDTH, TARGET_HEIGHT))
 
@@ -122,8 +120,9 @@ def create_videos():
         print(f"Error listing source directory: {e}")
         return
     
-    print(f"Found {len(sequences)} sequences.")
+    print(f"Found {len(sequences)} sequences in {SOURCE_DIR}.")
 
+    # Process all sequences found
     for seq_name in tqdm(sequences):
         seq_path = os.path.join(SOURCE_DIR, seq_name)
         rgb_path = os.path.join(seq_path, 'rgb')
@@ -133,16 +132,54 @@ def create_videos():
         disp_out = os.path.join(DISP_OUT_DIR, f"{seq_name}.mp4")
         
         # Collect Images
-        rgb_files = sorted(glob.glob(os.path.join(rgb_path, "*.jpg")))[:MAX_FRAMES]
-        depth_files = sorted(glob.glob(os.path.join(depth_path, "*.png")))[:MAX_FRAMES]
+        rgb_files = sorted(glob.glob(os.path.join(rgb_path, "*.jpg")))
+        depth_files = sorted(glob.glob(os.path.join(depth_path, "*.png")))
         
+        if not rgb_files and not depth_files:
+            continue
+            
         # Generate RGB Video
-        if os.path.exists(rgb_path) and not os.path.exists(rgb_out) and len(rgb_files) > 0:
+        if os.path.exists(rgb_path) and len(rgb_files) > 0:
+            # print(f"Creating RGB video from {len(rgb_files)} frames...")
             create_video_from_frames(rgb_files, rgb_out, is_disparity=False)
             
         # Generate Disparity Video
-        if os.path.exists(depth_path) and not os.path.exists(disp_out) and len(depth_files) > 0:
+        if os.path.exists(depth_path) and len(depth_files) > 0:
+            # print(f"Creating Disparity video from {len(depth_files)} frames...")
             create_video_from_frames(depth_files, disp_out, is_disparity=True)
 
 if __name__ == '__main__':
-    create_videos()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source_dir", help="Specific source directory to process (optional)")
+    parser.add_argument("--seq_name", help="Specific sequence name to process (optional). If set, only this sequence inside source_dir (or default) is processed.")
+    args = parser.parse_args()
+
+    if args.source_dir:
+        SOURCE_DIR = args.source_dir
+    
+    if args.seq_name:
+        # Process single sequence mode
+        print(f"Processing single sequence: {args.seq_name}")
+        ensure_dir(RGB_OUT_DIR)
+        ensure_dir(DISP_OUT_DIR)
+        
+        seq_path = os.path.join(SOURCE_DIR, args.seq_name)
+        rgb_path = os.path.join(seq_path, 'rgb')
+        depth_path = os.path.join(seq_path, 'depth')
+        
+        rgb_out = os.path.join(RGB_OUT_DIR, f"{args.seq_name}.mp4")
+        disp_out = os.path.join(DISP_OUT_DIR, f"{args.seq_name}.mp4")
+        
+        rgb_files = sorted(glob.glob(os.path.join(rgb_path, "*.jpg")))
+        depth_files = sorted(glob.glob(os.path.join(depth_path, "*.png")))
+        
+        if os.path.exists(rgb_path) and len(rgb_files) > 0:
+            create_video_from_frames(rgb_files, rgb_out, is_disparity=False)
+            
+        if os.path.exists(depth_path) and len(depth_files) > 0:
+            create_video_from_frames(depth_files, disp_out, is_disparity=True)
+            
+    else:
+        # Batch mode (original behavior)
+        create_videos()
