@@ -338,7 +338,7 @@ class GlobalConfig:
     self.camera_rotation_augmentation_max = 5.0
     # Every data_save_freq frame the data is stored during training
     # Set to one for backwards compatibility. Released dataset was collected with 5
-    self.data_save_freq = 5
+    self.data_save_freq = 2
     # LiDAR compression parameters
     self.point_format = 0  # LARS point format used for storing
     self.point_precision = 0.01  # Precision up to which LiDAR points are stored
@@ -352,18 +352,18 @@ class GlobalConfig:
     # Number of points the LiDAR generates per second.
     # Change in proportion to the rotation frequency.
     self.lidar_points_per_second = 600000
-    self.camera_pos = [-1.5, 0.0, 2.0]  # x, y, z mounting position of the camera
-    self.camera_rot_0 = [0.0, 0.0, 0.0]  # Roll Pitch Yaw of camera 0 in degree
+    self.camera_pos = [0.2522726, 0.0258750, 1.8726235]  # x, y, z mounting position of the camera
+    self.camera_rot_0 = [0.5020343, 1.4495749, -0.1646833]  # Roll Pitch Yaw of camera 0 in degree
 
     # Therefore their size is smaller
-    self.camera_width = 1024  # Camera width in pixel during data collection and eval (affects sensor agent)
-    self.camera_height = 512  # Camera height in pixel during data collection and eval (affects sensor agent)
-    self.camera_fov = 110
+    self.camera_width = 1920  # Camera width in pixel during data collection and eval (affects sensor agent)
+    self.camera_height = 1080  # Camera height in pixel during data collection and eval (affects sensor agent)
+    self.camera_fov = 63.7103
 
     # Crop the image during training to the values below. also affects the transformer tokens self.img_vert_anchors
     self.crop_image = True
-    self.cropped_height = 384  # crops off the bottom part
-    self.cropped_width = 1024  # crops off both sides symmetrically
+    self.cropped_height = 1080  # crops off the bottom part
+    self.cropped_width = 1920  # crops off both sides symmetrically
 
     # -----------------------------------------------------------------------------
     # Dataloader

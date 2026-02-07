@@ -46,16 +46,16 @@ class DataAgent(AutoPilot):
     self.cutin_vehicle_starting_position = None
 
     if self.save_path is not None and self.datagen:
-      (self.save_path / 'lidar').mkdir()
+      # (self.save_path / 'lidar').mkdir()
       (self.save_path / 'rgb').mkdir()
       (self.save_path / 'semantics').mkdir()
-      (self.save_path / 'semantics_augmented').mkdir()
+      # (self.save_path / 'semantics_augmented').mkdir()
       (self.save_path / 'depth').mkdir()
-      (self.save_path / 'depth_augmented').mkdir()
-      (self.save_path / 'rgb_augmented').mkdir()
-      (self.save_path / 'bev_semantics').mkdir()
-      (self.save_path / 'bev_semantics_augmented').mkdir()
-      (self.save_path / 'boxes').mkdir()
+      # (self.save_path / 'depth_augmented').mkdir()
+      # (self.save_path / 'rgb_augmented').mkdir()
+      # (self.save_path / 'bev_semantics').mkdir()
+      # (self.save_path / 'bev_semantics_augmented').mkdir()
+      # (self.save_path / 'boxes').mkdir()
 
     self.tmp_visu = int(os.environ.get('TMP_VISU', 0))
 
@@ -117,19 +117,21 @@ class DataAgent(AutoPilot):
           'height': self.config.camera_height,
           'fov': self.config.camera_fov,
           'id': 'rgb'
-      }, {
-          'type': 'sensor.camera.rgb',
-          'x': self.config.camera_pos[0],
-          'y': self.config.camera_pos[1] + self.augmentation_translation,
-          'z': self.config.camera_pos[2],
-          'roll': self.config.camera_rot_0[0],
-          'pitch': self.config.camera_rot_0[1],
-          'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
-          'width': self.config.camera_width,
-          'height': self.config.camera_height,
-          'fov': self.config.camera_fov,
-          'id': 'rgb_augmented'
-      }, {
+      }, 
+      # {
+      #     'type': 'sensor.camera.rgb',
+      #     'x': self.config.camera_pos[0],
+      #     'y': self.config.camera_pos[1] + self.augmentation_translation,
+      #     'z': self.config.camera_pos[2],
+      #     'roll': self.config.camera_rot_0[0],
+      #     'pitch': self.config.camera_rot_0[1],
+      #     'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
+      #     'width': self.config.camera_width,
+      #     'height': self.config.camera_height,
+      #     'fov': self.config.camera_fov,
+      #     'id': 'rgb_augmented'
+      # }, 
+      {
           'type': 'sensor.camera.semantic_segmentation',
           'x': self.config.camera_pos[0],
           'y': self.config.camera_pos[1],
@@ -141,19 +143,21 @@ class DataAgent(AutoPilot):
           'height': self.config.camera_height,
           'fov': self.config.camera_fov,
           'id': 'semantics'
-      }, {
-          'type': 'sensor.camera.semantic_segmentation',
-          'x': self.config.camera_pos[0],
-          'y': self.config.camera_pos[1] + self.augmentation_translation,
-          'z': self.config.camera_pos[2],
-          'roll': self.config.camera_rot_0[0],
-          'pitch': self.config.camera_rot_0[1],
-          'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
-          'width': self.config.camera_width,
-          'height': self.config.camera_height,
-          'fov': self.config.camera_fov,
-          'id': 'semantics_augmented'
-      }, {
+      }, 
+      # {
+      #     'type': 'sensor.camera.semantic_segmentation',
+      #     'x': self.config.camera_pos[0],
+      #     'y': self.config.camera_pos[1] + self.augmentation_translation,
+      #     'z': self.config.camera_pos[2],
+      #     'roll': self.config.camera_rot_0[0],
+      #     'pitch': self.config.camera_rot_0[1],
+      #     'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
+      #     'width': self.config.camera_width,
+      #     'height': self.config.camera_height,
+      #     'fov': self.config.camera_fov,
+      #     'id': 'semantics_augmented'
+      # }, 
+      {
           'type': 'sensor.camera.depth',
           'x': self.config.camera_pos[0],
           'y': self.config.camera_pos[1],
@@ -165,32 +169,34 @@ class DataAgent(AutoPilot):
           'height': self.config.camera_height,
           'fov': self.config.camera_fov,
           'id': 'depth'
-      }, {
-          'type': 'sensor.camera.depth',
-          'x': self.config.camera_pos[0],
-          'y': self.config.camera_pos[1] + self.augmentation_translation,
-          'z': self.config.camera_pos[2],
-          'roll': self.config.camera_rot_0[0],
-          'pitch': self.config.camera_rot_0[1],
-          'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
-          'width': self.config.camera_width,
-          'height': self.config.camera_height,
-          'fov': self.config.camera_fov,
-          'id': 'depth_augmented'
-      }]
+      }, 
+      # {
+      #     'type': 'sensor.camera.depth',
+      #     'x': self.config.camera_pos[0],
+      #     'y': self.config.camera_pos[1] + self.augmentation_translation,
+      #     'z': self.config.camera_pos[2],
+      #     'roll': self.config.camera_rot_0[0],
+      #     'pitch': self.config.camera_rot_0[1],
+      #     'yaw': self.config.camera_rot_0[2] + self.augmentation_rotation,
+      #     'width': self.config.camera_width,
+      #     'height': self.config.camera_height,
+      #     'fov': self.config.camera_fov,
+      #     'id': 'depth_augmented'
+      # }
+      ]
 
-    result.append({
-        'type': 'sensor.lidar.ray_cast',
-        'x': self.config.lidar_pos[0],
-        'y': self.config.lidar_pos[1],
-        'z': self.config.lidar_pos[2],
-        'roll': self.config.lidar_rot[0],
-        'pitch': self.config.lidar_rot[1],
-        'yaw': self.config.lidar_rot[2],
-        'rotation_frequency': self.config.lidar_rotation_frequency,
-        'points_per_second': self.config.lidar_points_per_second,
-        'id': 'lidar'
-    })
+    # result.append({
+    #     'type': 'sensor.lidar.ray_cast',
+    #     'x': self.config.lidar_pos[0],
+    #     'y': self.config.lidar_pos[1],
+    #     'z': self.config.lidar_pos[2],
+    #     'roll': self.config.lidar_rot[0],
+    #     'pitch': self.config.lidar_rot[1],
+    #     'yaw': self.config.lidar_rot[2],
+    #     'rotation_frequency': self.config.lidar_rotation_frequency,
+    #     'points_per_second': self.config.lidar_points_per_second,
+    #     'id': 'lidar'
+    # })
 
     return result
 
@@ -199,74 +205,74 @@ class DataAgent(AutoPilot):
 
     if self.save_path is not None and (self.datagen or self.tmp_visu):
       rgb = input_data['rgb'][1][:, :, :3]
-      rgb_augmented = input_data['rgb_augmented'][1][:, :, :3]
+      # rgb_augmented = input_data['rgb_augmented'][1][:, :, :3]
 
       # We store depth at 8 bit to reduce the filesize. 16 bit would be ideal, but we can't afford the extra storage.
       depth = input_data['depth'][1][:, :, :3]
       depth = (t_u.convert_depth(depth) * 255.0 + 0.5).astype(np.uint8)
 
-      depth_augmented = input_data['depth_augmented'][1][:, :, :3]
-      depth_augmented = (t_u.convert_depth(depth_augmented) * 255.0 + 0.5).astype(np.uint8)
+      # depth_augmented = input_data['depth_augmented'][1][:, :, :3]
+      # depth_augmented = (t_u.convert_depth(depth_augmented) * 255.0 + 0.5).astype(np.uint8)
 
       semantics = input_data['semantics'][1][:, :, 2]
-      semantics_augmented = input_data['semantics_augmented'][1][:, :, 2]
+      # semantics_augmented = input_data['semantics_augmented'][1][:, :, 2]
 
     else:
       rgb = None
-      rgb_augmented = None
+      # rgb_augmented = None
       semantics = None
-      semantics_augmented = None
+      # semantics_augmented = None
       depth = None
-      depth_augmented = None
+      # depth_augmented = None
 
     # The 10 Hz LiDAR only delivers half a sweep each time step at 20 Hz.
     # Here we combine the 2 sweeps into the same coordinate system
-    if self.last_lidar is not None:
-      ego_transform = self._vehicle.get_transform()
-      ego_location = ego_transform.location
-      last_ego_location = self.last_ego_transform.location
-      relative_translation = np.array([
-          ego_location.x - last_ego_location.x, ego_location.y - last_ego_location.y,
-          ego_location.z - last_ego_location.z
-      ])
+    # if self.last_lidar is not None:
+    #   ego_transform = self._vehicle.get_transform()
+    #   ego_location = ego_transform.location
+    #   last_ego_location = self.last_ego_transform.location
+    #   relative_translation = np.array([
+    #       ego_location.x - last_ego_location.x, ego_location.y - last_ego_location.y,
+    #       ego_location.z - last_ego_location.z
+    #   ])
 
-      ego_yaw = ego_transform.rotation.yaw
-      last_ego_yaw = self.last_ego_transform.rotation.yaw
-      relative_rotation = np.deg2rad(t_u.normalize_angle_degree(ego_yaw - last_ego_yaw))
+    #   ego_yaw = ego_transform.rotation.yaw
+    #   last_ego_yaw = self.last_ego_transform.rotation.yaw
+    #   relative_rotation = np.deg2rad(t_u.normalize_angle_degree(ego_yaw - last_ego_yaw))
 
-      orientation_target = np.deg2rad(ego_yaw)
-      # Rotate difference vector from global to local coordinate system.
-      rotation_matrix = np.array([[np.cos(orientation_target), -np.sin(orientation_target), 0.0],
-                                  [np.sin(orientation_target),
-                                   np.cos(orientation_target), 0.0], [0.0, 0.0, 1.0]])
-      relative_translation = rotation_matrix.T @ relative_translation
+    #   orientation_target = np.deg2rad(ego_yaw)
+    #   # Rotate difference vector from global to local coordinate system.
+    #   rotation_matrix = np.array([[np.cos(orientation_target), -np.sin(orientation_target), 0.0],
+    #                               [np.sin(orientation_target),
+    #                                np.cos(orientation_target), 0.0], [0.0, 0.0, 1.0]])
+    #   relative_translation = rotation_matrix.T @ relative_translation
 
-      lidar_last = t_u.algin_lidar(self.last_lidar, relative_translation, relative_rotation)
-      # Combine back and front half of LiDAR
-      lidar_360 = np.concatenate((input_data['lidar'], lidar_last), axis=0)
-    else:
-      lidar_360 = input_data['lidar']  # The first frame only has 1 half
+    #   lidar_last = t_u.algin_lidar(self.last_lidar, relative_translation, relative_rotation)
+    #   # Combine back and front half of LiDAR
+    #   lidar_360 = np.concatenate((input_data['lidar'], lidar_last), axis=0)
+    # else:
+    #   lidar_360 = input_data['lidar']  # The first frame only has 1 half
 
-    bounding_boxes = self.get_bounding_boxes(lidar=lidar_360)
+    # bounding_boxes = self.get_bounding_boxes(lidar=lidar_360)
 
     self.stop_sign_criteria.tick(self._vehicle)
-    bev_semantics = self.ss_bev_manager.get_observation(self.close_traffic_lights)
-    bev_semantics_augmented = self.ss_bev_manager_augmented.get_observation(self.close_traffic_lights)
+    # bev_semantics = self.ss_bev_manager.get_observation(self.close_traffic_lights)
+    # bev_semantics_augmented = self.ss_bev_manager_augmented.get_observation(self.close_traffic_lights)
 
-    if self.tmp_visu:
-      self.visualuize(bev_semantics['rendered'], rgb)
+    # if self.tmp_visu:
+    #   self.visualuize(bev_semantics['rendered'], rgb)
 
     result.update({
-        'lidar': lidar_360,
+        # 'lidar': lidar_360,
         'rgb': rgb,
-        'rgb_augmented': rgb_augmented,
+        # 'rgb_augmented': rgb_augmented,
         'semantics': semantics,
-        'semantics_augmented': semantics_augmented,
+        # 'semantics_augmented': semantics_augmented,
         'depth': depth,
-        'depth_augmented': depth_augmented,
-        'bev_semantics': bev_semantics['bev_semantic_classes'],
-        'bev_semantics_augmented': bev_semantics_augmented['bev_semantic_classes'],
-        'bounding_boxes': bounding_boxes,
+        # 'depth_augmented': depth_augmented,
+        # 'bev_semantics': bev_semantics['bev_semantic_classes'],
+        # 'bev_semantics_augmented': bev_semantics_augmented['bev_semantic_classes'],
+        # 'bounding_boxes': bounding_boxes,
     })
 
     return result
@@ -276,21 +282,29 @@ class DataAgent(AutoPilot):
     self.step_tmp += 1
 
     # Convert LiDAR into the coordinate frame of the ego vehicle
-    input_data['lidar'] = t_u.lidar_to_ego_coordinate(self.config, input_data['lidar'])
+    # input_data['lidar'] = t_u.lidar_to_ego_coordinate(self.config, input_data['lidar'])
 
     # Must be called before run_step, so that the correct augmentation shift is saved
     if self.datagen:
       self.augment_camera(sensors)
 
-    control = super().run_step(input_data, timestamp, plant=plant)
+    # WARMUP (Skip first 40 frames/2 seconds to allow vehicles to spawn)
+    if self.step_tmp < 40 and self.save_path is not None:
+         saved_path = self.save_path
+         self.save_path = None
+         control = super().run_step(input_data, timestamp, plant=plant)
+         self.save_path = saved_path
+    else:
+         control = super().run_step(input_data, timestamp, plant=plant)
 
     tick_data = self.tick(input_data)
 
     if self.step % self.config.data_save_freq == 0:
-      if self.save_path is not None and self.datagen:
+      # Added check to ensure we don't save during warmup
+      if self.save_path is not None and self.datagen and self.step_tmp >= 40:
         self.save_sensors(tick_data)
 
-    self.last_lidar = input_data['lidar']
+    # self.last_lidar = input_data['lidar']
     self.last_ego_transform = self._vehicle.get_transform()
 
     if plant:
@@ -370,33 +384,33 @@ class DataAgent(AutoPilot):
 
     # CARLA images are already in opencv's BGR format.
     cv2.imwrite(str(self.save_path / 'rgb' / (f'{frame:04}.jpg')), tick_data['rgb'])
-    cv2.imwrite(str(self.save_path / 'rgb_augmented' / (f'{frame:04}.jpg')), tick_data['rgb_augmented'])
+    # cv2.imwrite(str(self.save_path / 'rgb_augmented' / (f'{frame:04}.jpg')), tick_data['rgb_augmented'])
 
     cv2.imwrite(str(self.save_path / 'semantics' / (f'{frame:04}.png')), tick_data['semantics'])
-    cv2.imwrite(str(self.save_path / 'semantics_augmented' / (f'{frame:04}.png')), tick_data['semantics_augmented'])
+    # cv2.imwrite(str(self.save_path / 'semantics_augmented' / (f'{frame:04}.png')), tick_data['semantics_augmented'])
 
     cv2.imwrite(str(self.save_path / 'depth' / (f'{frame:04}.png')), tick_data['depth'])
-    cv2.imwrite(str(self.save_path / 'depth_augmented' / (f'{frame:04}.png')), tick_data['depth_augmented'])
+    # cv2.imwrite(str(self.save_path / 'depth_augmented' / (f'{frame:04}.png')), tick_data['depth_augmented'])
 
-    cv2.imwrite(str(self.save_path / 'bev_semantics' / (f'{frame:04}.png')), tick_data['bev_semantics'])
-    cv2.imwrite(str(self.save_path / 'bev_semantics_augmented' / (f'{frame:04}.png')),
-                tick_data['bev_semantics_augmented'])
+    # cv2.imwrite(str(self.save_path / 'bev_semantics' / (f'{frame:04}.png')), tick_data['bev_semantics'])
+    # cv2.imwrite(str(self.save_path / 'bev_semantics_augmented' / (f'{frame:04}.png')),
+                # tick_data['bev_semantics_augmented'])
 
     # Specialized LiDAR compression format
-    header = laspy.LasHeader(point_format=self.config.point_format)
-    header.offsets = np.min(tick_data['lidar'], axis=0)
-    header.scales = np.array([self.config.point_precision, self.config.point_precision, self.config.point_precision])
+    # header = laspy.LasHeader(point_format=self.config.point_format)
+    # header.offsets = np.min(tick_data['lidar'], axis=0)
+    # header.scales = np.array([self.config.point_precision, self.config.point_precision, self.config.point_precision])
 
-    with laspy.open(self.save_path / 'lidar' / (f'{frame:04}.laz'), mode='w', header=header) as writer:
-      point_record = laspy.ScaleAwarePointRecord.zeros(tick_data['lidar'].shape[0], header=header)
-      point_record.x = tick_data['lidar'][:, 0]
-      point_record.y = tick_data['lidar'][:, 1]
-      point_record.z = tick_data['lidar'][:, 2]
+    # with laspy.open(self.save_path / 'lidar' / (f'{frame:04}.laz'), mode='w', header=header) as writer:
+    #   point_record = laspy.ScaleAwarePointRecord.zeros(tick_data['lidar'].shape[0], header=header)
+    #   point_record.x = tick_data['lidar'][:, 0]
+    #   point_record.y = tick_data['lidar'][:, 1]
+    #   point_record.z = tick_data['lidar'][:, 2]
 
-      writer.write_points(point_record)
+    #   writer.write_points(point_record)
 
-    with gzip.open(self.save_path / 'boxes' / (f'{frame:04}.json.gz'), 'wt', encoding='utf-8') as f:
-      json.dump(tick_data['bounding_boxes'], f, indent=4)
+    # with gzip.open(self.save_path / 'boxes' / (f'{frame:04}.json.gz'), 'wt', encoding='utf-8') as f:
+    #   json.dump(tick_data['bounding_boxes'], f, indent=4)
 
   def destroy(self, results=None):
     torch.cuda.empty_cache()

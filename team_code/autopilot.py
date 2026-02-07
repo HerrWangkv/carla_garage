@@ -130,9 +130,24 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
     if os.environ.get("SAVE_PATH", None) is not None:
       string = os.environ["TOWN"]
       string += "_Rep" + os.environ["REPETITION"]
-      string += f"_{self.route_index}"
+
+      # --- 修改开始：从 XML 路径解析出 "Accident_10_0" ---
+      if "ROUTES" in os.environ:
+          # 使用 pathlib 解析路径: data/.../Accident/10_0.xml
+          route_path = pathlib.Path(os.environ["ROUTES"])
+          scenario_type = route_path.parent.name  # 提取父文件夹名 -> "Accident"
+          scenario_name = route_path.stem         # 提取文件名(无后缀) -> "10_0"
+          
+          # 拼接成: Town12_Rep0_Accident_10_0
+          string += f"_{scenario_type}_{scenario_name}"
+      else:
+          # 如果没有 ROUTES 变量，回退到旧逻辑
+          string += f"_{self.route_index}"
+      # --- 修改结束 ---
 
       self.save_path = pathlib.Path(os.environ["SAVE_PATH"]) / string
+      
+      # 注意：如果你希望 Bash 脚本控制跳过，这里保持 exist_ok=False 是对的
       self.save_path.mkdir(parents=True, exist_ok=False)
 
       if self.datagen:
