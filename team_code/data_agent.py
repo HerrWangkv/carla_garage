@@ -288,8 +288,8 @@ class DataAgent(AutoPilot):
     if self.datagen:
       self.augment_camera(sensors)
 
-    # WARMUP (Skip first 40 frames/2 seconds to allow vehicles to spawn)
-    if self.step_tmp < 40 and self.save_path is not None:
+    # WARMUP (Skip first 20 frames/1 second to allow vehicles to spawn)
+    if self.step_tmp < 20 and self.save_path is not None:
          saved_path = self.save_path
          self.save_path = None
          control = super().run_step(input_data, timestamp, plant=plant)
@@ -301,7 +301,7 @@ class DataAgent(AutoPilot):
 
     if self.step % self.config.data_save_freq == 0:
       # Added check to ensure we don't save during warmup
-      if self.save_path is not None and self.datagen and self.step_tmp >= 40:
+      if self.save_path is not None and self.datagen and self.step_tmp >= 20:
         self.save_sensors(tick_data)
 
     # self.last_lidar = input_data['lidar']

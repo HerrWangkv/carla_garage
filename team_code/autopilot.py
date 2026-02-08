@@ -147,8 +147,7 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
 
       self.save_path = pathlib.Path(os.environ["SAVE_PATH"]) / string
       
-      # 注意：如果你希望 Bash 脚本控制跳过，这里保持 exist_ok=False 是对的
-      self.save_path.mkdir(parents=True, exist_ok=False)
+      self.save_path.mkdir(parents=True, exist_ok=True)
 
       if self.datagen:
         (self.save_path / "measurements").mkdir()

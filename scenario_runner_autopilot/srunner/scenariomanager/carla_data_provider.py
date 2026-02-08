@@ -13,6 +13,7 @@ local buffers to avoid blocking calls to CARLA
 from __future__ import print_function
 
 import math
+import os
 import re
 import threading
 from numpy import random
@@ -72,6 +73,16 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     _grp = None
     _runtime_init_flag = False
     _lock = threading.Lock()
+    # === [Sim2Real 双Pass 新增变量] ===
+    _spawn_registry = {}  # 记录 ID -> Fingerprint (Pass 1 用)
+    _blacklist = set()    # 黑名单 Fingerprints (Pass 2 用)
+    _ghost_mode = os.environ.get("GHOST_MODE", "OFF") # "DETECT" or "BLOCK"
+
+    @staticmethod
+    def get_fingerprint(blueprint, transform):
+        # 指纹 = 蓝图类型 + 坐标(保留1位小数，容忍微小误差)
+        loc = transform.location
+        return f"{blueprint}_{loc.x:.1f}_{loc.y:.1f}_{loc.z:.1f}"
 
     @staticmethod
     def register_actor(actor, transform=None):
@@ -600,6 +611,23 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         """
         blueprint = CarlaDataProvider.create_blueprint(model, rolename, color, actor_category, attribute_filter)
 
+        if CarlaDataProvider._ghost_mode == "BLOCK":
+            # 只有车辆才会被拦截
+            if 'vehicle' in blueprint.id:
+                fp = CarlaDataProvider.get_fingerprint(blueprint.id, spawn_point)
+                
+                if fp in CarlaDataProvider._blacklist:
+                    # === 新增：豁免逻辑 ===
+                    # 检查角色名 (rolename)。如果是场景必须的角色，则豁免。
+                    critical_keywords = ['scenario']
+
+                    if any(key in rolename for key in critical_keywords):
+                        print(f"⚠️ [Pass 2] 豁免黑名单车辆 {fp} (原因: 关键角色 '{rolename}')")
+                        # 不执行 return None，让程序继续向下运行，允许生成
+                    else:
+                        print(f"🚫 [Pass 2] 拦截黑名单车辆生成: {fp} (角色: {rolename})")
+                        return None # 只有非关键角色的黑名单车辆才会被拦截
+                
         if random_location:
             actor = None
             while not actor:
@@ -620,7 +648,11 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         if actor is None:
             print("WARNING: Cannot spawn actor {} at position {}".format(model, spawn_point.location))
             return None
-
+        if CarlaDataProvider._ghost_mode == "DETECT":
+            if 'vehicle' in blueprint.id:
+                fp = CarlaDataProvider.get_fingerprint(blueprint.id, spawn_point)
+                # 记录：这个 ID 的车，它的“身份证”是 fp
+                CarlaDataProvider._spawn_registry[actor.id] = fp
         # De/activate the autopilot of the actor if it belongs to vehicle
         if autopilot:
             if isinstance(actor, carla.Vehicle):

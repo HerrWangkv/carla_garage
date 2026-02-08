@@ -195,7 +195,7 @@ class BackgroundBehavior(AtomicBehavior):
 
         self._spawn_vertical_shift = 0.2
         self._reuse_dist = 10  # When spawning actors, might reuse actors closer to this distance
-        self._spawn_free_radius = 20  # Sources closer to the ego will not spawn actors
+        self._spawn_free_radius = 45  # Sources closer to the ego will not spawn actors
         self._fake_junction_ids = []
         self._fake_lane_pair_keys = []
 
@@ -1080,7 +1080,9 @@ class BackgroundBehavior(AtomicBehavior):
                 if location and not self._is_location_behind_ego(location):
                     front_veh += 1
             if front_veh > self._road_front_vehicles:
-                self._destroy_actor(source.actors[0])  # This is always the front most vehicle
+                actor_to_check = source.actors[0]
+                if not self._is_protected(actor_to_check): # 仅在不受保护时销毁
+                    self._destroy_actor(actor_to_check)
 
             if not source.active:
                 continue
@@ -1465,7 +1467,8 @@ class BackgroundBehavior(AtomicBehavior):
                 if not side_road_wp:
                     # No side lane found part of the road dictionary, remove them
                     for actor in list(self._road_dict[get_lane_key(road_wp)].actors):
-                        self._destroy_actor(actor)
+                        if not self._is_protected(actor):
+                            self._destroy_actor(actor)
                     self._road_dict.pop(get_lane_key(road_wp), None)
                     continue
 
@@ -1598,7 +1601,7 @@ class BackgroundBehavior(AtomicBehavior):
 
             # Spawn a new actor if the last one is far enough
             if distance > self._opposite_spawn_dist:
-                actor = self._spawn_source_actor(source)
+                actor = self._spawn_source_actor(source, self._spawn_free_radius)
                 if actor is None:
                     continue
                 self._tm.ignore_lights_percentage(actor, 100)
@@ -2191,6 +2194,30 @@ class BackgroundBehavior(AtomicBehavior):
             return True
         return False
 
+    def _is_protected(self, actor):
+        """综合判定：如果在视野内或距离太近，则受保护不被销毁"""
+        location = actor.get_location()
+        ego_location = self._ego_actor.get_location()
+        
+        # 1. 距离保护
+        if location.distance(ego_location) < self._spawn_free_radius:
+            return True
+        
+        # 2. 视野保护 (FOV 120度)
+        ego_tf = self._ego_actor.get_transform()
+        forward = ego_tf.get_forward_vector()
+        vec_to_target = location - ego_location
+        dist = vec_to_target.length()
+        if dist < 0.1: return True
+        
+        dot = forward.x * (vec_to_target.x / dist) + \
+            forward.y * (vec_to_target.y / dist) + \
+            forward.z * (vec_to_target.z / dist)
+        
+        if dot > 0.5:  # cos(60°) = 0.5
+            return True
+            
+        return False
     def _update_road_actors(self):
         """
         Dynamically controls the actor speed in front of the ego.
@@ -2446,7 +2473,8 @@ class BackgroundBehavior(AtomicBehavior):
 
                             actors = exit_dict[actor_lane_key]['actors']
                             if len(actors) > 0 and len(actors) >= exit_dict[actor_lane_key]['max_actors']:
-                                self._destroy_actor(actors[0])  # This is always the front most vehicle
+                                if not self._is_protected(actors[0]):
+                                    self._destroy_actor(actors[0])
                             actors.append(actor)
 
                 # Change them to "road mode" when far enough from the junction
@@ -2483,7 +2511,8 @@ class BackgroundBehavior(AtomicBehavior):
 
             distance = location.distance(self._ego_wp.transform.location)
             if distance > opposite_dist and self._is_location_behind_ego(location):
-                self._destroy_actor(actor)
+                if not self._is_protected(actor):
+                    self._destroy_actor(actor)
                 continue
 
             # Ending / starting lanes create issues as the lane width gradually decreases until reaching 0,

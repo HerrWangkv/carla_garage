@@ -50,7 +50,30 @@ CARLA_PID=$!
 sleep 25
 
 # --- 4. 运行录制 ---
-echo "🎬 开始录制..."
+echo "========================================"
+echo "🕵️  PHASE 1: GHOST DETECTION"
+echo "========================================"
+# 关闭数据保存 (DATAGEN=0)，不开渲染 (RenderOffScreen)，以此加速
+export GHOST_MODE="DETECT"
+export DATAGEN=0 
+# 这里运行你的 Python 启动命令，例如:
+python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
+    --port=2000 \
+    --traffic-manager-port=8000 \
+    --routes=${ROUTES} \
+    --repetitions=1 \
+    --track=MAP \
+    --agent=${WORK_DIR}/team_code/data_agent.py \
+    --agent-config=${ROUTES} \
+    --checkpoint=${SAVE_PATH}/results_ghost_detect.json \
+    --debug=0
+echo "========================================"
+echo "🛡️  PHASE 2: CLEAN RECORDING"
+echo "========================================"
+# 开启数据保存，开启黑名单拦截
+export GHOST_MODE="BLOCK"
+export DATAGEN=1
+# 再次运行完全相同的命令
 xvfb-run -a -s "-screen 0 2560x1440x24" python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
     --port=2000 \
     --traffic-manager-port=8000 \
@@ -79,3 +102,5 @@ if [ $? -eq 0 ]; then
 else
     echo "⚠️  场景录制成功，但视频生成失败。"
 fi
+
+rm ghost_blacklist.json
