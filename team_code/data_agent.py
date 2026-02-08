@@ -13,7 +13,7 @@ import gzip
 import laspy
 from shapely.geometry import Polygon
 from pathlib import Path
-
+import py_trees
 from autopilot import AutoPilot
 import transfuser_utils as t_u
 
@@ -288,20 +288,14 @@ class DataAgent(AutoPilot):
     if self.datagen:
       self.augment_camera(sensors)
 
-    # WARMUP (Skip first 20 frames/1 second to allow vehicles to spawn)
-    if self.step_tmp < 20 and self.save_path is not None:
-         saved_path = self.save_path
-         self.save_path = None
-         control = super().run_step(input_data, timestamp, plant=plant)
-         self.save_path = saved_path
-    else:
-         control = super().run_step(input_data, timestamp, plant=plant)
+    control = super().run_step(input_data, timestamp, plant=plant)
 
     tick_data = self.tick(input_data)
-
+    is_triggered = py_trees.blackboard.Blackboard().get("scenario_triggered")
     if self.step % self.config.data_save_freq == 0:
       # Added check to ensure we don't save during warmup
-      if self.save_path is not None and self.datagen and self.step_tmp >= 20:
+
+      if self.save_path is not None and self.datagen and is_triggered:
         self.save_sensors(tick_data)
 
     # self.last_lidar = input_data['lidar']

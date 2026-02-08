@@ -14,7 +14,6 @@ mkdir -p ${SAVE_PATH}
 export VIDEO_PATH=${WORK_DIR}/my_sim2real_videos
 mkdir -p ${VIDEO_PATH}
 export REPETITION=0
-export DATAGEN=1
 
 # --- 2. 提取信息并执行“存在性检查” ---
 if [ -n "$1" ]; then

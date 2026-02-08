@@ -21,6 +21,7 @@ for parent in "${PARENT_DIRS[@]}"; do
     for scenario_dir in "$parent"/*; do
         if [ -d "$scenario_dir" ]; then
             xml_files=("$scenario_dir"/*.xml)
+            mapfile -t xml_files < <(find "$scenario_dir" -maxdepth 1 -name '*.xml' | sort -V)
 
             if [ -e "${xml_files[0]}" ]; then
                 first_xml="${xml_files[0]}"

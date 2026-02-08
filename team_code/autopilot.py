@@ -13,6 +13,7 @@ from agents.navigation.local_planner import RoadOption
 import math
 import numpy as np
 import carla
+import py_trees
 from scipy.integrate import RK45
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
@@ -991,8 +992,8 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
       if abs(tp_angle) > 1.0 and abs(deg_pred_angle) > 1.0:
         same_direction = float(tp_angle * deg_pred_angle >= 0.0)
         self.tp_sign_agrees_with_angle.append(same_direction)
-
-    if ((self.step % self.config.data_save_freq == 0) and (self.save_path is not None) and self.datagen):
+    is_triggered = py_trees.blackboard.Blackboard().get("scenario_triggered")
+    if ((self.step % self.config.data_save_freq == 0) and (self.save_path is not None) and self.datagen and is_triggered):
       measurements_file = self.save_path / "measurements" / f"{frame:04}.json.gz"
       with gzip.open(measurements_file, "wt", encoding="utf-8") as f:
         ujson.dump(data, f, indent=4)

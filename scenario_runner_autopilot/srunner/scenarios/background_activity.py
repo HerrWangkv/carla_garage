@@ -195,7 +195,7 @@ class BackgroundBehavior(AtomicBehavior):
 
         self._spawn_vertical_shift = 0.2
         self._reuse_dist = 10  # When spawning actors, might reuse actors closer to this distance
-        self._spawn_free_radius = 45  # Sources closer to the ego will not spawn actors
+        self._spawn_free_radius = 100  # Sources closer to the ego will not spawn actors
         self._fake_junction_ids = []
         self._fake_lane_pair_keys = []
 
