@@ -12,7 +12,7 @@ DEFAULT_SOURCE_DIR = 'my_sunny_dataset'  # 你之前设置的数据集保存路�
 VIDEO_ROOT = 'my_sunny_videos'           # 视频输出路径
 FRAMERATE = 10
 TARGET_WIDTH = 1280
-TARGET_HEIGHT = 720
+TARGET_HEIGHT = 704
 
 def ensure_dir(path):
     if not os.path.exists(path):
