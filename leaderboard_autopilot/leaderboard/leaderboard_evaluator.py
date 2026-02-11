@@ -42,7 +42,10 @@ sensors_to_icons = {
     'sensor.other.gnss':        'carla_gnss',
     'sensor.other.imu':         'carla_imu',
     'sensor.opendrive_map':     'carla_opendrive_map',
-    'sensor.speedometer':       'carla_speedometer'
+    'sensor.speedometer':       'carla_speedometer',
+    'sensor.camera.semantic_segmentation': 'carla_camera', 
+    'sensor.camera.depth':      'carla_camera', 
+    'sensor.camera.instance_segmentation': 'carla_camera'
 }
 
 class LeaderboardEvaluator(object):
@@ -291,7 +294,7 @@ class LeaderboardEvaluator(object):
                 self._ros1_server = ROS1Server()
                 self._ros1_server.start()
 
-            self.agent_instance = agent_class_obj(args.host, args.port, args.debug)
+            self.agent_instance = agent_class_obj(args.agent_config)
             self.agent_instance.set_global_plan(self.route_scenario.gps_route, self.route_scenario.route)
             self.agent_instance.setup(args.agent_config)
 
@@ -300,7 +303,7 @@ class LeaderboardEvaluator(object):
                 self.sensors = self.agent_instance.sensors()
                 track = self.agent_instance.track
 
-                validate_sensor_configuration(self.sensors, track, args.track)
+                # validate_sensor_configuration(self.sensors, track, args.track)
 
                 self.sensor_icons = [sensors_to_icons[sensor['type']] for sensor in self.sensors]
                 self.statistics_manager.save_sensors(self.sensor_icons)

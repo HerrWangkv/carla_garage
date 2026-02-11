@@ -130,7 +130,14 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
     if os.environ.get("SAVE_PATH", None) is not None:
       string = os.environ["TOWN"]
       string += "_Rep" + os.environ["REPETITION"]
-      string += f"_{self.route_index}"
+      if "ROUTES" in os.environ:
+          route_path = pathlib.Path(os.environ["ROUTES"])
+          scenario_type = route_path.parent.name 
+          scenario_name = route_path.stem         
+
+          string += f"_{scenario_type}_{scenario_name}"
+      else:
+          string += f"_{self.route_index}"
 
       self.save_path = pathlib.Path(os.environ["SAVE_PATH"]) / string
       self.save_path.mkdir(parents=True, exist_ok=False)

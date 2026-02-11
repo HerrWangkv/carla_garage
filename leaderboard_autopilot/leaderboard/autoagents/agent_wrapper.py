@@ -154,7 +154,7 @@ class AgentWrapper(object):
             sensor_location = carla.Location()
             sensor_rotation = carla.Rotation()
 
-        if type_ == 'sensor.camera.rgb':
+        if type_.startswith('sensor.camera'):
             attributes['image_size_x'] = str(sensor_spec['width'])
             attributes['image_size_y'] = str(sensor_spec['height'])
             attributes['fov'] = str(sensor_spec['fov'])
