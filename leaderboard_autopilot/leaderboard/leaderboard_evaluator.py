@@ -229,8 +229,9 @@ elif os.environ.get("GHOST_MODE") == "BLOCK":
         def new_spawn(self, blueprint, transform, *args, **kwargs):
             # 1. 【安全网】如果是剧情关键角色，无条件放行！
             # 这是为了解决问题2：即使坐标在黑名单，只要是剧情车，必须让它过。
+            important_roles = ['scenario', 'hero']  # 可以根据实际情况调整关键词
             if blueprint.has_attribute('role_name'):
-                if 'scenario' in blueprint.get_attribute('role_name').as_str():
+                if any(role in blueprint.get_attribute('role_name').as_str() for role in important_roles):
                     return original_func(self, blueprint, transform, *args, **kwargs)
 
             # 2. 【安全网】传感器无条件放行

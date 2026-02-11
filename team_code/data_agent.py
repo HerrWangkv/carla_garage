@@ -291,11 +291,11 @@ class DataAgent(AutoPilot):
     control = super().run_step(input_data, timestamp, plant=plant)
 
     tick_data = self.tick(input_data)
-    is_triggered = py_trees.blackboard.Blackboard().get("scenario_triggered")
+    # is_triggered = py_trees.blackboard.Blackboard().get("scenario_triggered")
     if self.step % self.config.data_save_freq == 0:
       # Added check to ensure we don't save during warmup
 
-      if self.save_path is not None and self.datagen and is_triggered:
+      if self.save_path is not None and self.datagen:# and is_triggered:
         self.save_sensors(tick_data)
 
     # self.last_lidar = input_data['lidar']
