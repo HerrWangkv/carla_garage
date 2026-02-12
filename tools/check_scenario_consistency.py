@@ -57,6 +57,8 @@ def main():
                 print(f"  - Disparity video exists")
 
     # Continue with normal dataset folder checks
+    ok_count = 0
+    total_count = 0
     for scenario in sorted(dataset_scenarios):
         scenario_path = os.path.join(data_root, scenario)
         if not os.path.isdir(scenario_path):
@@ -73,7 +75,10 @@ def main():
         if all((v is None or v == 0)for v in counts.values()):
             print(f"[INFO] All data missing or empty for scenario: {scenario}")
             continue
-        if not identical:
+        total_count += 1
+        if identical:
+            ok_count += 1
+        else:
             print(f"Scenario: {scenario}")
             for folder, count in counts.items():
                 print(f"  {folder}: {count}")
@@ -92,6 +97,9 @@ def main():
             print(f"  [INFO] RGB video exists but disparity video does NOT.")
         if rgb_video_count is None and disparity_video_count is not None:
             print(f"  [INFO] Disparity video exists but RGB video does NOT.")
+
+    print(f"\n===== SUMMARY =====")
+    print(f"Scenarios with no problem: {ok_count} / {total_count}")
 
 if __name__ == "__main__":
     main()
