@@ -352,18 +352,18 @@ class GlobalConfig:
     # Number of points the LiDAR generates per second.
     # Change in proportion to the rotation frequency.
     self.lidar_points_per_second = 600000
-    self.camera_pos = [0.2522726, 0.0258750, 1.8726235]  # x, y, z mounting position of the camera
-    self.camera_rot_0 = [0.5020343, 1.4495749, -0.1646833]  # Roll Pitch Yaw of camera 0 in degree
+    self.camera_pos = [0.2829637, -0.0159456, 1.8609576]  # x, y, z mounting position of the camera
+    self.camera_rot_0 = [0.0461279, 0.3232263, -0.3254555]  # Roll Pitch Yaw of camera 0 in degree
 
     # Therefore their size is smaller
-    self.camera_width = 1920  # Camera width in pixel during data collection and eval (affects sensor agent)
-    self.camera_height = 1080  # Camera height in pixel during data collection and eval (affects sensor agent)
-    self.camera_fov = 63.7103
+    self.camera_width = 1600  # Camera width in pixel during data collection and eval (affects sensor agent)
+    self.camera_height = 900  # Camera height in pixel during data collection and eval (affects sensor agent)
+    self.camera_fov = 64.5615
 
     # Crop the image during training to the values below. also affects the transformer tokens self.img_vert_anchors
     self.crop_image = True
-    self.cropped_height = 1080  # crops off the bottom part
-    self.cropped_width = 1920  # crops off both sides symmetrically
+    self.cropped_height = 1600  # crops off the bottom part
+    self.cropped_width = 900  # crops off both sides symmetrically
 
     # -----------------------------------------------------------------------------
     # Dataloader

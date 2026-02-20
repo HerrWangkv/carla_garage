@@ -19,13 +19,35 @@ export REPETITION=0
 if [ -n "$1" ]; then
     export ROUTES="$1"
 
-    # 提取 Town 名
-    if [[ "$ROUTES" == *"Town12"* ]]; then export TOWN="Town12";
-    elif [[ "$ROUTES" == *"Town13"* ]]; then export TOWN="Town13";
-    else export TOWN="Town10HD"; fi
-    SCENARIO_TYPE=$(basename $(dirname "$ROUTES")) 
-    SCENARIO_NAME=$(basename "$ROUTES" .xml)
-    TARGET_FOLDER="${SAVE_PATH}/${TOWN}_Rep${REPETITION}_${SCENARIO_TYPE}_${SCENARIO_NAME}"
+
+    # 通用提取 Town 名和场景名，支持所有 TownXX
+    # 从文件名中提取 Town 名（如 Town01、Town02...）
+    CONFIG_BASENAME=$(basename "$ROUTES" .xml)
+    if [[ "$CONFIG_BASENAME" =~ (Town[0-9A-Za-z]+)_ ]]; then
+        TOWN="${BASH_REMATCH[1]}"
+    else
+        # 若未匹配，回退到路径中查找
+        if [[ "$ROUTES" =~ (Town[0-9A-Za-z]+) ]]; then
+            TOWN="${BASH_REMATCH[1]}"
+        else
+            TOWN="UnknownTown"
+        fi
+    fi
+    export TOWN  # 确保 TOWN 变量对子进程可见
+    # 场景类型为上级目录名
+    SCENARIO_TYPE=$(basename $(dirname "$ROUTES"))
+
+
+    # 只取 config 文件名中的最后一个下划线后的数字作为 index（更健壮，确保为数字）
+    SCENARIO_INDEX=$(echo "$CONFIG_BASENAME" | grep -oE '[0-9]+$')
+    TARGET_FOLDER="${SAVE_PATH}/${TOWN}_Rep${REPETITION}_${SCENARIO_TYPE}_${SCENARIO_INDEX}"
+
+    # Debug 输出
+    echo "[DEBUG] CONFIG_BASENAME: $CONFIG_BASENAME"
+    echo "[DEBUG] TOWN: $TOWN"
+    echo "[DEBUG] SCENARIO_TYPE: $SCENARIO_TYPE"
+    echo "[DEBUG] SCENARIO_INDEX: $SCENARIO_INDEX"
+    echo "[DEBUG] TARGET_FOLDER: $TARGET_FOLDER"
 
     if [ -d "$TARGET_FOLDER" ]; then
         echo "⏭️  略过：文件夹已存在，不再重复采集。"
@@ -50,7 +72,7 @@ sleep 25
 
 # --- 4. 运行录制 ---
 export DATAGEN=1
-timeout 300 xvfb-run -a -s "-screen 0 2560x1440x24" python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
+timeout 600 xvfb-run -a -s "-screen 0 2560x1440x24" python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
     --port=2000 \
     --traffic-manager-port=8000 \
     --routes=${ROUTES} \
@@ -64,7 +86,7 @@ timeout 300 xvfb-run -a -s "-screen 0 2560x1440x24" python3 ${LEADERBOARD_ROOT}/
 EXIT_STATUS=$?
 
 if [ $EXIT_STATUS -eq 124 ]; then
-    echo "⚠️  TIMEOUT REACHED: The simulation took longer than 5 minutes and was killed."
+    echo "⚠️  TIMEOUT REACHED: The simulation took longer than 10 minutes and was killed."
 elif [ $EXIT_STATUS -ne 0 ]; then
     echo "⚠️  Simulation failed with error code $EXIT_STATUS."
 fi
@@ -79,10 +101,11 @@ echo "🎥 录制结束，正在生成视频..."
 # 调用修改后的 Python 脚本，传入刚刚生成的文件夹路径
 python3 tools/create_videos.py --scenario_path "$TARGET_FOLDER" --output "$VIDEO_PATH"
 
+VIDEO_FILENAME="${TOWN}_Rep${REPETITION}_${SCENARIO_TYPE}_${SCENARIO_INDEX}.mp4"
 if [ $? -eq 0 ]; then
     echo "✅ 流程全部完成！"
     echo "原始数据: $TARGET_FOLDER"
-    echo "视频文件: $VIDEO_PATH/rgb/${TOWN}_Rep${REPETITION}_${SCENARIO_TYPE}_${SCENARIO_NAME}.mp4"
+    echo "视频文件: $VIDEO_PATH/rgb/$VIDEO_FILENAME"
 else
     echo "⚠️  场景录制成功，但视频生成失败。"
 fi

@@ -133,7 +133,7 @@ class AutoPilot(autonomous_agent_local.AutonomousAgent):
       if "ROUTES" in os.environ:
           route_path = pathlib.Path(os.environ["ROUTES"])
           scenario_type = route_path.parent.name 
-          scenario_name = route_path.stem         
+          scenario_name = route_path.stem.split("_")[-1]         
 
           string += f"_{scenario_type}_{scenario_name}"
       else:

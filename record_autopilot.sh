@@ -4,68 +4,46 @@
 LOG_DIR="logs"
 mkdir -p "$LOG_DIR"
 
-# 定义父目录列表
-PARENT_DIRS=("data/50x38_Town12" "data/50x36_Town13")
-
 echo "🚀 开始批量运行任务，日志将存放在 ./$LOG_DIR 目录下..."
 
-for parent in "${PARENT_DIRS[@]}"; do
-    if [ ! -d "$parent" ]; then
-        echo "⚠️  跳过不存在的目录: $parent"
-        continue
+# 遍历 data/lb1_split 下所有 scenario 类型
+for scenario_type_dir in data/lb1_split/*; do
+    if [ -d "$scenario_type_dir" ]; then
+        scenario_type=$(basename "$scenario_type_dir")
+
+        echo "=========================================="
+        echo "处理 Scenario 类型: $scenario_type"
+
+        # 找到所有 Town*.xml
+        mapfile -t all_xmls < <(find "$scenario_type_dir" -maxdepth 1 -name 'Town*.xml' | sort -V)
+
+        # 提取唯一的 Town 前缀（如 Town01, Town02）
+        towns=$(printf "%s\n" "${all_xmls[@]}" \
+            | sed -E 's#.*/(Town[0-9]+).*#\1#' \
+            | sort -u)
+
+        # 对每个 Town 取前 2 个 XML
+        for town in $towns; do
+            mapfile -t town_xmls < <(
+                printf "%s\n" "${all_xmls[@]}" \
+                | grep "/$town" \
+                | sort -V \
+                | head -n 2
+            )
+
+            for xml_file in "${town_xmls[@]}"; do
+                xml_base=$(basename "$xml_file" .xml)
+                log_file="${LOG_DIR}/${scenario_type}_${xml_base}.log"
+
+                echo "------------------------------------------"
+                echo "运行场景: $scenario_type / $xml_base"
+                echo "日志文件: $log_file"
+
+                bash record_single_autopilot.sh "$xml_file" &> "$log_file"
+                echo "✅ 已完成，退出码: $?"
+            done
+        done
     fi
-
-    # 提取父目录名用于日志前缀 (如 50x38_Town12)
-    parent_name=$(basename "$parent")
-
-    for scenario_dir in "$parent"/*; do
-        if [ -d "$scenario_dir" ]; then
-            xml_files=("$scenario_dir"/*.xml)
-            mapfile -t xml_files < <(find "$scenario_dir" -maxdepth 1 -name '*.xml' | sort -V)
-
-            if [ -e "${xml_files[0]}" ]; then
-                first_xml="${xml_files[0]}"
-
-                # 2. 生成唯一的日志文件名
-                scenario_name=$(basename "$scenario_dir")
-                log_file="${LOG_DIR}/${parent_name}_${scenario_name}_0.log"
-
-                echo "------------------------------------------"
-                echo "运行场景: $parent_name / $scenario_name"
-                echo "日志文件: $log_file"
-
-                # 3. 执行脚本并重定向所有输出 (标准输出 + 错误输出) 到日志文件
-                # 使用 &> 将 stdout 和 stderr 同时存入日志
-                bash record_single_autopilot.sh "$first_xml" &> "$log_file"
-
-                # 如果你想在屏幕上看到进度同时保存日志，可以用下面的命令代替上面那行：
-                # bash record_single_autopilot.sh "$first_xml" 2>&1 | tee "$log_file"
-
-                echo "✅ 已完成，退出码: $?"
-            fi
-            
-            if [ -e "${xml_files[1]}" ]; then
-                second_xml="${xml_files[1]}"
-
-                # 2. 生成唯一的日志文件名
-                scenario_name=$(basename "$scenario_dir")
-                log_file="${LOG_DIR}/${parent_name}_${scenario_name}_1.log"
-
-                echo "------------------------------------------"
-                echo "运行场景: $parent_name / $scenario_name"
-                echo "日志文件: $log_file"
-
-                # 3. 执行脚本并重定向所有输出 (标准输出 + 错误输出) 到日志文件
-                # 使用 &> 将 stdout 和 stderr 同时存入日志
-                bash record_single_autopilot.sh "$second_xml" &> "$log_file"
-
-                # 如果你想在屏幕上看到进度同时保存日志，可以用下面的命令代替上面那行：
-                # bash record_single_autopilot.sh "$second_xml" 2>&1 | tee "$log_file"
-
-                echo "✅ 已完成，退出码: $?"
-            fi
-        fi
-    done
 done
 
 echo "=========================================="
